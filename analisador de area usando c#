@@ -1,0 +1,142 @@
+using System.Windows.Forms;
+
+using System;
+using System.Drawing;
+using System.Net;
+using System.Text;
+using System.Net;
+using System.IO;
+using System.Text;
+using AnaliseImagem;
+
+namespace testimagens
+{
+    public partial class PorcosMoura : Form
+    {
+        private String caminho;
+        public PorcosMoura()
+        {
+            InitializeComponent();
+        }
+
+        float analiselimiar = 0;
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            analiselimiar = (trackBar1.Value);
+            analiselimiar = analiselimiar * 0.01f;
+            label3.Text = analiselimiar.ToString();
+
+
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            OpenFileDialog file = new OpenFileDialog();
+            file.Filter = "jpg|*.jpg|png|*.png";
+            if (file.ShowDialog() == DialogResult.OK)
+            {
+                caminho = file.FileName;
+                pictureBox1.ImageLocation = file.FileName;
+
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            button2.Enabled = false;
+            var limiar = analiselimiar;
+            var areaaberta = 0;
+            var count = 0;
+            //pictureBox1.ImageLocation = caminho;
+            Bitmap img = new Bitmap(caminho);
+            //Bitmap bmp= new Bitmap()
+            for (var x = 0; x < img.Width; x++)
+            {
+                for (var y = 0; y < img.Height; y++)
+                {
+                    Color pixelColor = img.GetPixel(x, y);
+                    if (pixelColor.GetBrightness() < limiar)
+                    {
+                        count++;
+                        img.SetPixel(x, y, Color.Red);
+                    }
+                    Color pixel = img.GetPixel(x, y);
+                    if (pixel.GetSaturation() < limiar)
+                    {
+                        areaaberta++;
+                        ;
+                    }
+                }
+            }
+
+            pictureBox1.Image = img;
+
+            string areadolocal = textBox1.Text;
+
+            float areadolocal1;
+            if (float.TryParse(areadolocal, out areadolocal1))
+            {
+
+            }
+            else
+            {
+                MessageBox.Show("digite valores validos, para encontrar a area\n " +
+                    "Use area total em metros");
+            }
+
+            float areadeumpixel = areadolocal1 / (count + areaaberta);
+            float areaarborizada = count * areadeumpixel;
+            float areamataaberta = areaaberta * areadeumpixel;
+
+
+            var percent = ((float)count / (img.Width * img.Height)) * 100;
+            label1.Text = String.Format("Area arborizada: {0:f} Metros (Area equivalente a {1:f}%) \n" +
+                "Area de campo aberto: {2:f} Metros (Area equivalente a {3:f}%)", areaarborizada, percent, areamataaberta, 100 - percent);
+            button2.Enabled = true;
+
+
+
+
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            menu voltar = new menu();
+            voltar.Show();
+            this.Close();
+        }
+    }
+}
+
+
