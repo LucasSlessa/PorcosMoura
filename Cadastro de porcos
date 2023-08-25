@@ -1,0 +1,169 @@
+using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace AnaliseImagem
+{
+    public partial class CadastrarPorcos : Form
+    {
+        private MySqlConnection conexao;
+        private string stringConexao = "Data Source=127.0.0.1;Port=3306;Database=test;User ID=root;Password=";
+
+        public CadastrarPorcos()
+        {
+            InitializeComponent();
+            conexao = new MySqlConnection(stringConexao);
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void CadastrarPorcos_Load(object sender, EventArgs e)
+        {
+
+            CarregarMatrizes();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string nome = txtNome.Text;
+            decimal peso = decimal.Parse(txtPeso.Text);
+            string raca = txtRaca.Text;
+            int idade = int.Parse(txtIdade.Text);
+            decimal altura = decimal.Parse(txtAltura.Text);
+            decimal largura = decimal.Parse(txtLargura.Text);
+            MatrizItem matrizItem = comboBox1.SelectedItem as MatrizItem;
+            int matrizId = matrizItem.MatrizId;
+
+            InserirDados(nome, peso, raca, idade, altura, largura, matrizId);
+        }
+
+        private void InserirDados(string nome, decimal peso, string raca, int idade, decimal altura, decimal largura, int matrizId)
+        {
+            string sqlInsert = "INSERT INTO porcos (Nome, Peso, Raca, Idade, Altura, Largura, MatrizId) " +
+                        "VALUES (@Nome, @Peso, @Raca, @Idade, @Altura, @Largura, @MatrizId)";
+
+            using (MySqlConnection conexao = new MySqlConnection(stringConexao))
+            {
+                using (MySqlCommand command = new MySqlCommand(sqlInsert, conexao))
+                {
+                    command.Parameters.Add("@Nome", MySqlDbType.VarChar).Value = nome;
+                    command.Parameters.Add("@Peso", MySqlDbType.Decimal).Value = peso;
+                    command.Parameters.Add("@Raca", MySqlDbType.VarChar).Value = raca;
+                    command.Parameters.Add("@Idade", MySqlDbType.Int32).Value = idade;
+                    command.Parameters.Add("@Altura", MySqlDbType.Decimal).Value = altura;
+                    command.Parameters.Add("@Largura", MySqlDbType.Decimal).Value = largura;
+                    command.Parameters.Add("@MatrizId", MySqlDbType.Int32).Value = matrizId;
+
+                    conexao.Open();
+                    command.ExecuteNonQuery();
+                    conexao.Close();
+                }
+            }
+
+            MessageBox.Show("Dados inseridos com sucesso!");
+            LimparTextBoxes();
+
+
+
+        }
+
+        private void LimparTextBoxes()
+        {
+            txtNome.Clear();
+            txtPeso.Clear();
+            txtRaca.Clear();
+            txtIdade.Clear();
+            txtAltura.Clear();
+            txtLargura.Clear();
+            comboBox1.SelectedIndex = -1;
+        }
+
+        private void CadastroDeMatrizes_Load(object sender, EventArgs e)
+        {
+            CarregarMatrizes();
+        }
+
+        private void CarregarMatrizes()
+        {
+            string query = "SELECT Id, Nome FROM matrizes";
+
+            try
+            {
+                conexao.Open();
+                MySqlCommand command = new MySqlCommand(query, conexao);
+                MySqlDataReader reader = command.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int matrizId = reader.GetInt32("Id");
+                        string nomeMatriz = reader.GetString("Nome");
+                        comboBox1.Items.Add(new MatrizItem(matrizId, nomeMatriz));
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Não há matrizes cadastradas.");
+                }
+
+                reader.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocorreu um erro ao carregar as matrizes: " + ex.Message);
+            }
+            finally
+            {
+                conexao.Close();
+            }
+
+        }
+
+
+        public class MatrizItem
+        {
+            public int MatrizId { get; set; }
+            public string Nome { get; set; }
+
+            public MatrizItem(int matrizId, string nome)
+            {
+                MatrizId = matrizId;
+                Nome = nome;
+            }
+
+            public override string ToString()
+            {
+                return Nome;
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            menu voltar = new menu();
+            voltar.Show();
+
+            this.Close();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            String todos = string.Format("Nome: {0}\n" + "Peso: {1} Kg\n" + "Raça: {2}\n" + "Idade: {3} Meses\n"
+                + "Altura: {4} cm\n" + "Largura: {5} cm\n" + "matriz: {6}\n", txtNome.Text, txtPeso.Text, txtRaca.Text, txtIdade.Text, txtAltura.Text, txtLargura.Text, comboBox1.Text);
+            label3.Text = todos;
+        }
+    }
+}
+
