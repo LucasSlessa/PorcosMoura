@@ -1,0 +1,126 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+namespace AnaliseImagem
+{
+    public partial class CadastroDeMatrizes : Form
+    {
+
+        private MySqlConnection conexao;
+        private string stringConexao = "Data Source=127.0.0.1,3306;Initial Catalog=test;User ID=root;Password=";
+
+        public CadastroDeMatrizes()
+        {
+            InitializeComponent();
+            conexao = new MySqlConnection(stringConexao);
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            menu voltar = new menu();
+            voltar.Show();
+
+            this.Close();
+        }
+
+        private void CadastroDeMatrizes_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            String todos = string.Format("Nome: {0}\n" + "Peso: {1} Kg\n" + "Raça: {2}\n" + "Idade: {3} Meses\n"
+                + "Altura: {4} cm\n" + "Largura: {5} cm\n" + "Fornecedor: {6}\n", txtNome.Text, txtPeso.Text, txtRaca.Text, txtIdade.Text, txtAltura.Text, txtLargura.Text, txtFornecedor.Text);
+            label3.Text = todos;
+
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string nome = txtNome.Text;
+            decimal peso = decimal.Parse(txtPeso.Text);
+            string raca = txtRaca.Text;
+            int idade = int.Parse(txtIdade.Text);
+            decimal altura = decimal.Parse(txtAltura.Text);
+            decimal largura = decimal.Parse(txtLargura.Text);
+            string fornecedor = txtFornecedor.Text;
+
+            InserirDados(nome, peso, raca, idade, altura, largura, fornecedor);
+        }
+
+
+        private void InserirDados(string nome, decimal peso, string raca, int idade, decimal altura, decimal largura, string fornecedor)
+        {
+            string sqlInsert = "INSERT INTO matrizes (Nome, Peso, Raca, Idade, Altura, Largura, Fornecedor) " +
+                               "VALUES (@Nome, @Peso, @Raca, @Idade, @Altura, @Largura, @Fornecedor)";
+
+            using (MySqlConnection conexao = new MySqlConnection(stringConexao))
+            {
+                using (MySqlCommand command = new MySqlCommand(sqlInsert, conexao))
+                {
+                    command.Parameters.Add("@Nome", MySqlDbType.VarChar).Value = nome;
+                    command.Parameters.Add("@Peso", MySqlDbType.Decimal).Value = peso;
+                    command.Parameters.Add("@Raca", MySqlDbType.VarChar).Value = raca;
+                    command.Parameters.Add("@Idade", MySqlDbType.Int32).Value = idade;
+                    command.Parameters.Add("@Altura", MySqlDbType.Decimal).Value = altura;
+                    command.Parameters.Add("@Largura", MySqlDbType.Decimal).Value = largura;
+                    command.Parameters.Add("@Fornecedor", MySqlDbType.VarChar).Value = fornecedor;
+
+                    conexao.Open();
+                    command.ExecuteNonQuery();
+                    conexao.Close();
+                }
+            }
+
+            MessageBox.Show("Dados inseridos com sucesso!");
+            LimparTextBoxes();
+        }
+        private void LimparTextBoxes()
+        {
+            txtNome.Clear();
+            txtPeso.Clear();
+            txtRaca.Clear();
+            txtIdade.Clear();
+            txtAltura.Clear();
+            txtLargura.Clear();
+            txtFornecedor.Clear();
+        }
+
+
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox6_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
+}
