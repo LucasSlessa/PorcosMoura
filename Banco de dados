@@ -1,0 +1,30 @@
+abra o projeto em c #
+ajuste a conexão com seu banco de dados e rode o seguinte codigo na consulta do seu banco:
+
+
+CREATE TABLE porcos (
+    porcosId INT AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(50) NOT NULL,
+    Peso DECIMAL(10, 2) NOT NULL,
+    Raca VARCHAR(50) NOT NULL,
+    Idade INT NOT NULL,
+    Altura DECIMAL(10, 2) NOT NULL,
+    Largura DECIMAL(10, 2) NOT NULL,
+    MatrizId INT NOT NULL,
+    
+    FOREIGN KEY (MatrizId) REFERENCES matrizes (Id)
+);
+
+
+CREATE TABLE matrizes (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Nome VARCHAR(50) NOT NULL,
+    Peso DECIMAL(10, 2) NOT NULL,
+    Raca VARCHAR(50) NOT NULL,
+    Idade INT NOT NULL,
+    Altura DECIMAL(10, 2) NOT NULL,
+    Largura DECIMAL(10, 2) NOT NULL,
+    fornecedor varchar(50) NOT NULL,
+    
+    
+);
